@@ -3,8 +3,18 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Check, Star, Zap, Shield } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function PlansPage() {
+    const router = useRouter();
+
+    const handleSelectPlan = (planName: string) => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('user_current_plan', planName);
+        }
+        router.push('/dashboard');
+    };
+
     const plans = [
         {
             name: 'Free',
@@ -55,7 +65,7 @@ export default function PlansPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-indigo-500/30">
+        <div className="min-h-screen bg-background text-white selection:bg-primary/30">
             <Navbar />
 
             <main className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
@@ -70,18 +80,18 @@ export default function PlansPage() {
 
                 <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 relative z-10">
                     {/* Background Glow */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/20 blur-[120px] rounded-full -z-10" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full -z-10" />
 
                     {plans.map((plan) => (
                         <div
                             key={plan.name}
                             className={`relative rounded-3xl p-8 border backdrop-blur-sm transition-transform hover:-translate-y-2 duration-300 ${plan.highlight
-                                    ? 'bg-white/10 border-indigo-500/50 shadow-2xl shadow-indigo-500/10'
-                                    : 'bg-[#1a1a1a]/80 border-white/10 hover:border-white/20'
+                                ? 'bg-white/10 border-primary/50 shadow-2xl shadow-primary/10'
+                                : 'bg-card/80 border-white/10 hover:border-white/20'
                                 }`}
                         >
                             {plan.highlight && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
+                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-orange-400 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider">
                                     Most Popular
                                 </div>
                             )}
@@ -98,7 +108,7 @@ export default function PlansPage() {
                             <ul className="space-y-4 mb-8">
                                 {plan.features.map((feature) => (
                                     <li key={feature} className="flex items-start gap-3 text-sm text-white/80">
-                                        <div className={`mt-0.5 rounded-full p-0.5 ${plan.highlight ? 'bg-indigo-500' : 'bg-white/20'}`}>
+                                        <div className={`mt-0.5 rounded-full p-0.5 ${plan.highlight ? 'bg-primary' : 'bg-white/20'}`}>
                                             <Check size={10} className="text-white" />
                                         </div>
                                         {feature}
@@ -107,9 +117,10 @@ export default function PlansPage() {
                             </ul>
 
                             <button
+                                onClick={() => handleSelectPlan(plan.name)}
                                 className={`w-full py-3 rounded-xl font-medium transition-all ${plan.highlight
-                                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/25'
-                                        : 'bg-white/10 hover:bg-white/20 text-white'
+                                    ? 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25'
+                                    : 'bg-white/10 hover:bg-white/20 text-white'
                                     }`}
                             >
                                 {plan.buttonText}
@@ -118,9 +129,9 @@ export default function PlansPage() {
                     ))}
                 </div>
 
-                <div className="max-w-4xl mx-auto mt-24 bg-[#1a1a1a] border border-white/5 rounded-2xl p-8 md:p-12">
+                <div className="max-w-4xl mx-auto mt-24 bg-card border border-white/5 rounded-2xl p-8 md:p-12">
                     <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <div className="w-16 h-16 bg-gradient-to-br from-primary to-orange-400 rounded-2xl flex items-center justify-center flex-shrink-0">
                             <Shield size={32} className="text-white" />
                         </div>
                         <div className="flex-1">

@@ -23,6 +23,8 @@ export default function CartPage() {
     orderId: string;
   } | null>(null);
 
+  const [licenseeName, setLicenseeName] = React.useState('');
+
   React.useEffect(() => {
     if (!isAuthenticated) {
       router.push('/');
@@ -31,6 +33,11 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     if (!user || items.length === 0) return;
+
+    if (!licenseeName.trim()) {
+      alert('Please enter a Licensee Name for the contract.');
+      return;
+    }
 
     setProcessingPayment(true);
 
@@ -151,8 +158,22 @@ export default function CartPage() {
               </div>
             ))}
 
-            <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-6 mt-8">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-6 mt-8 space-y-4">
+              <div>
+                <label htmlFor="licenseeName" className="block text-sm font-medium text-white/80 mb-2">
+                  Licensee Name (Legal Name for Contract)
+                </label>
+                <input
+                  type="text"
+                  id="licenseeName"
+                  value={licenseeName}
+                  onChange={(e) => setLicenseeName(e.target.value)}
+                  placeholder="Enter your full name or artist name"
+                  className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:border-indigo-500 focus:outline-none transition-colors"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-white/10">
                 <span className="text-xl font-bold">Total</span>
                 <div className="text-3xl font-bold text-indigo-400">
                   <IndianRupee size={32} className="inline" />

@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 
 interface AuthModalProps {
   open: boolean;
@@ -16,7 +18,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onOpenChange }) => {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, register } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,84 +54,141 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onOpenChange }) => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      const result = await loginWithGoogle();
+      if (result.success) {
+        onOpenChange(false);
+        // If not already on home page, push to home or dashboard
+        // But since this is a modal, often we just close it and let state update
+        // However, if we want to force navigation:
+        // router.push('/'); 
+      } else {
+        setError(result.error || 'Google Sign In failed');
+      }
+    } catch (error: any) {
+      setError(`Error: ${error?.message || 'Something went wrong with Google Sign-in'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#1a1a1a] border-white/10 text-white max-w-md">
+      <DialogContent className="bg-[#111] border border-white/5 text-white max-w-md rounded-3xl p-8 shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
+          <DialogTitle className="text-3xl font-bold text-center mb-2">
             {isLogin ? 'Sign In' : 'Create Account'}
           </DialogTitle>
           <DialogDescription className="text-white/60 text-center">
-            {isLogin 
-              ? 'Welcome back! Sign in to continue.' 
-              : 'Join Beat22 and start your music journey.'}
+            {isLogin
+              ? 'Welcome back! Sign in to continue.'
+              : 'Join Mormat Waves and start your music journey.'}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {!isLogin && (
+        <div className="mt-6">
+          {/* Google Sign In Button */}
+          <button
+            onClick={handleGoogleSignIn}
+            type="button"
+            className="w-full bg-white text-black font-bold py-3 rounded-xl flex items-center justify-center gap-3 mb-6 hover:bg-gray-200 transition-colors"
+          >
+            <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
+            {isLogin ? 'Sign in with Google' : 'Sign up with Google'}
+          </button>
+
+          {/* Divider */}
+          <div className="relative mb-6 text-center">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <span className="relative bg-[#111] px-4 text-sm text-white/40">
+              Or {isLogin ? 'sign in' : 'sign up'} with email
+            </span>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-3.5 focus:border-[#FF6B35]/50 focus:outline-none transition-colors placeholder:text-white/40"
+                  placeholder="Full Name*"
+                  required={!isLogin}
+                />
+              </div>
+            )}
+
             <div>
-              <label className="block text-sm font-medium mb-2">Full Name</label>
               <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 bg-[#0a0a0a] border border-white/10 rounded-lg focus:outline-none focus:border-indigo-500"
-                placeholder="Enter your name"
-                required={!isLogin}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-3.5 focus:border-[#FF6B35]/50 focus:outline-none transition-colors placeholder:text-white/40"
+                placeholder="Email*"
+                required
               />
             </div>
-          )}
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-[#0a0a0a] border border-white/10 rounded-lg focus:outline-none focus:border-indigo-500"
-              placeholder="Enter your email"
-              required
-            />
+            <div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-3.5 focus:border-[#FF6B35]/50 focus:outline-none transition-colors placeholder:text-white/40"
+                placeholder="Password*"
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="text-red-400 text-sm text-center bg-red-400/10 border border-red-400/20 rounded-lg py-2 px-4">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-white text-black font-bold text-lg py-4 rounded-xl mt-6 hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading && <Loader2 size={20} className="animate-spin" />}
+              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up for Free'}
+            </button>
+          </form>
+
+          {/* Toggle between Sign In and Sign Up */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => {
+                if (isLogin) {
+                  onOpenChange(false);
+                  router.push('/signup');
+                } else {
+                  setIsLogin(true);
+                  setError('');
+                }
+              }}
+              className="text-sm text-white/40 hover:text-[#FF6B35] transition-colors"
+            >
+              {isLogin
+                ? (
+                  <>
+                    Don't have an account? <span className="text-[#FF6B35] font-bold">Sign up</span>
+                  </>
+                )
+                : (
+                  <>
+                    Already have an account? <span className="text-[#FF6B35] font-bold">Sign in</span>
+                  </>
+                )}
+            </button>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-[#0a0a0a] border border-white/10 rounded-lg focus:outline-none focus:border-indigo-500"
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-
-          {error && (
-            <div className="text-red-400 text-sm text-center">{error}</div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 rounded-lg font-medium transition-colors"
-          >
-            {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
-          </button>
-        </form>
-
-        <div className="mt-4 text-center">
-          <button
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError('');
-            }}
-            className="text-sm text-indigo-400 hover:text-indigo-300"
-          >
-            {isLogin 
-              ? "Don't have an account? Sign up" 
-              : 'Already have an account? Sign in'}
-          </button>
         </div>
       </DialogContent>
     </Dialog>

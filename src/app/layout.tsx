@@ -6,6 +6,10 @@ import Script from "next/script";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { PurchasesProvider } from "@/contexts/PurchasesContext";
+import { SearchProvider } from "@/contexts/SearchContext";
+import { FavoritesProvider } from "@/contexts/FavoritesContext";
+import { AudioPlayerProvider } from "@/contexts/AudioPlayerContext";
+import AudioPlayer from "@/components/AudioPlayer";
 
 export const metadata: Metadata = {
   title: "Beat22 - Music Marketplace",
@@ -19,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-[#0a0a0a] text-white">
+      <body className="antialiased">
         <Script
           id="orchids-browser-logs"
           src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts/orchids-browser-logs.js"
@@ -40,12 +44,20 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <PurchasesProvider>
-              {children}
+              <SearchProvider>
+                <FavoritesProvider>
+                  <AudioPlayerProvider>
+                    {children}
+                    <AudioPlayer />
+                  </AudioPlayerProvider>
+                </FavoritesProvider>
+              </SearchProvider>
+
             </PurchasesProvider>
           </CartProvider>
         </AuthProvider>
         <VisualEditsMessenger />
       </body>
-    </html>
+    </html >
   );
 }

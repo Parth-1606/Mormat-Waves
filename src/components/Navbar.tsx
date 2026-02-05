@@ -1,38 +1,45 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Search, ChevronDown, ShoppingCart, LogOut, User, LayoutDashboard, Settings, CreditCard } from 'lucide-react';
+import { Search, ChevronDown, ShoppingCart, LogOut, User, LayoutDashboard, Settings, CreditCard, Bell, Music, Heart } from 'lucide-react';
 import Image from 'next/image';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 import AuthModal from '@/components/AuthModal';
 import StartSellingModal from '@/components/StartSellingModal';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
+  const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
   const { getItemCount } = useCart();
+  const { favorites } = useFavorites();
   const [searchQuery, setSearchQuery] = useState('');
   const [category, setCategory] = useState('General');
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showStartSellingModal, setShowStartSellingModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(dropdownRef as React.RefObject<HTMLElement>, () => setShowCategoryDropdown(false));
   useClickOutside(profileDropdownRef as React.RefObject<HTMLElement>, () => setShowProfileDropdown(false));
+  useClickOutside(notificationRef as React.RefObject<HTMLElement>, () => setShowNotifications(false));
 
   // Check if user is a seller
-  const [isSeller, setIsSeller] = useState(false);
-
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsSeller(!!localStorage.getItem('seller_profile'));
-    }
-  }, [isAuthenticated]);
+  // Check if user is a seller (prioritize user.role over legacy localStorage)
+  let isSeller = false;
+  if (user?.role) {
+    isSeller = user.role === 'seller';
+  } else if (typeof window !== 'undefined') {
+    isSeller = !!localStorage.getItem('seller_profile');
+  }
 
   const categories = ['General', 'Hip-Hop', 'Pop', 'R&B', 'Electronic', 'Rock', 'Jazz'];
 
@@ -67,7 +74,7 @@ const Navbar = () => {
 
   const handleStartSelling = () => {
     if (!isAuthenticated) {
-      setShowAuthModal(true);
+      router.push('/signup');
     } else {
       setShowStartSellingModal(true);
     }
@@ -148,6 +155,63 @@ const Navbar = () => {
         <div className="flex items-center gap-6">
           {isAuthenticated && (
             <>
+              {/* Notifications */}
+              <div className="relative" ref={notificationRef}>
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 hover:bg-white/10 rounded-full transition-colors group"
+                >
+                  <Bell size={20} className="text-white/60 group-hover:text-white transition-colors" />
+                  <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0a0a0a]"></span>
+                </button>
+
+                {showNotifications && (
+                  <div className="absolute top-full right-0 mt-2 w-80 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                    <div className="p-3 border-b border-white/5 flex justify-between items-center">
+                      <span className="text-sm font-bold">Notifications</span>
+                      <button className="text-xs text-indigo-400 hover:text-indigo-300">Mark all read</button>
+                    </div>
+                    <div className="max-h-80 overflow-y-auto">
+                      <div className="p-4 hover:bg-white/5 transition-colors border-b border-white/5 cursor-pointer">
+                        <div className="flex gap-3">
+                          <div className="w-10 h-10 rounded bg-red-500/20 flex items-center justify-center shrink-0">
+                            <span className="text-red-500 font-bold">!</span>
+                          </div>
+                          <div>
+                            <p className="text-sm text-white/90 leading-tight mb-1">
+                              The beat <span className="font-bold">Fire Track</span> was deleted by the producer.
+                            </p>
+                            <p className="text-xs text-white/40">From your favorites • 2h ago</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-4 hover:bg-white/5 transition-colors cursor-pointer">
+                        <div className="flex gap-3">
+                          <div className="w-10 h-10 rounded bg-green-500/20 flex items-center justify-center shrink-0">
+                            <span className="text-green-500 font-bold">$</span>
+                          </div>
+                          <div>
+                            <p className="text-sm text-white/90 leading-tight mb-1">
+                              Special Offer: Get 30% off sound kits
+                            </p>
+                            <p className="text-xs text-white/40">Limited time • 1h ago</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <Link href="/favorites" className="relative p-2 hover:bg-white/10 rounded-full transition-colors group" title="Favorites">
+                <Heart size={20} className="text-white/60 group-hover:text-primary transition-colors" />
+                {favorites.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center text-xs font-bold text-black border border-[#0a0a0a]">
+                    {favorites.length}
+                  </span>
+                )}
+              </Link>
+
               <Link href="/cart" className="relative p-2 hover:bg-white/10 rounded-full transition-colors group" title="Cart">
                 <ShoppingCart size={20} className="text-white/60 group-hover:text-white transition-colors" />
                 {getItemCount() > 0 && (
@@ -157,14 +221,17 @@ const Navbar = () => {
                 )}
               </Link>
 
-              {isSeller && (
-                <Link href="/dashboard" className="flex items-center gap-2 p-2 px-3 hover:bg-white/10 rounded-full transition-colors group">
-                  <LayoutDashboard size={18} className="text-white/60 group-hover:text-white transition-colors" />
-                  <span className="text-sm font-medium text-white/60 group-hover:text-white transition-colors">
-                    Dashboard
-                  </span>
-                </Link>
-              )}
+              {/* Dashboard Link - for all authenticated users */}
+              <Link
+                href={isSeller ? "/dashboard" : "/buyer-dashboard"}
+                className="flex items-center gap-2 p-2 px-3 hover:bg-white/10 rounded-full transition-colors group"
+              >
+                <LayoutDashboard size={18} className="text-white/60 group-hover:text-white transition-colors" />
+                <span className="text-sm font-medium text-white/60 group-hover:text-white transition-colors">
+                  Dashboard
+                </span>
+              </Link>
+
 
               {/* User Dropdown */}
               <div className="relative" ref={profileDropdownRef}>
@@ -181,6 +248,16 @@ const Navbar = () => {
 
                 {showProfileDropdown && (
                   <div className="absolute top-full right-0 mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                    {/* Account Type Badge */}
+                    <div className="p-3 border-b border-white/5 bg-white/5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-white/60">Account Type</span>
+                        <span className={`text-xs font-bold px-2 py-1 rounded ${isSeller ? 'bg-primary/20 text-primary' : 'bg-blue-500/20 text-blue-400'}`}>
+                          {isSeller ? '★ SELLER' : '♥ BUYER'}
+                        </span>
+                      </div>
+                    </div>
+
                     <div className="p-2 border-b border-white/5">
                       <p className="text-xs text-white/40 px-3 py-1">Account</p>
                       <Link href="/profile" className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 rounded-md transition-colors">

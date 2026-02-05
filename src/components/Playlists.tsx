@@ -4,11 +4,11 @@ import React from 'react';
 import { ChevronRight, BadgeCheck } from 'lucide-react';
 
 const playlists = [
-  { id: 1, title: 'For Hip-Hop Artists', followers: '430', beats: '333', image: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=400' },
-  { id: 2, title: 'For Pop Artists', followers: '198', beats: '388', image: 'https://images.unsplash.com/photo-1514525253361-bee87184919a?auto=format&fit=crop&q=80&w=400' },
-  { id: 3, title: 'For RnB Artists', followers: '115', beats: '105', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=400' },
-  { id: 4, title: 'For Alternative Hip-Hop Art', followers: '121', beats: '1.7k', image: 'https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?auto=format&fit=crop&q=80&w=400' },
-  { id: 5, title: 'Experimental Stuff', followers: '74', beats: '118', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&q=80&w=400' },
+  { id: 1, title: 'For Hip-Hop Artists', followers: '430', beats: '333', image: '/hiphop-artists.png' },
+  { id: 2, title: 'For Pop Artists', followers: '198', beats: '388', image: '/pop-artists.png' },
+  { id: 3, title: 'For RnB Artists', followers: '115', beats: '105', image: '/rnb-artists.png' },
+  { id: 4, title: 'For Alternative Hip-Hop Art', followers: '121', beats: '1.7k', image: '/alt-hiphop.png' },
+  { id: 5, title: 'Experimental Stuff', followers: '74', beats: '118', image: '/experimental.png' },
 ];
 
 const Playlists = () => {

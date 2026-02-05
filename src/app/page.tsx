@@ -1,17 +1,17 @@
 'use client';
 
-import { AudioPlayerProvider } from "@/contexts/AudioPlayerContext";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Playlists from "@/components/Playlists";
 import BeatsList from "@/components/BeatsList";
-import AudioPlayer from "@/components/AudioPlayer";
 import Footer from "@/components/Footer";
+import Preloader from "@/components/Preloader";
 
 export default function Home() {
   return (
-    <AudioPlayerProvider>
-      <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-indigo-500/30">
+    <>
+      <Preloader />
+      <div className="min-h-screen bg-background text-white selection:bg-primary/30">
         <Navbar />
         <main>
           <Hero />
@@ -20,9 +20,7 @@ export default function Home() {
 
           <Footer />
         </main>
-
-        <AudioPlayer />
       </div>
-    </AudioPlayerProvider>
+    </>
   );
 }
