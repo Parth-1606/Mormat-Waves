@@ -32,11 +32,12 @@ const Navbar = () => {
   useClickOutside(profileDropdownRef as React.RefObject<HTMLElement>, () => setShowProfileDropdown(false));
   useClickOutside(notificationRef as React.RefObject<HTMLElement>, () => setShowNotifications(false));
 
-  // Check if user is a seller
-  // Check if user is a seller (prioritize user.role over legacy localStorage)
+  // Check if user is a seller or buyer
   let isSeller = false;
+  let isBuyer = false;
   if (user?.role) {
     isSeller = user.role === 'seller';
+    isBuyer = user.role === 'buyer';
   } else if (typeof window !== 'undefined') {
     isSeller = !!localStorage.getItem('seller_profile');
   }
@@ -91,16 +92,16 @@ const Navbar = () => {
           <div className="relative w-10 h-10">
             <Image
               src="/logo.png"
-              alt="Mormat Waves"
+              alt="Waves by Mormat"
               fill
               className="object-contain"
               priority
             />
           </div>
-          <span className="text-xl font-bold tracking-tight">Mormat Waves</span>
+          <span className="text-xl font-bold tracking-tight">Waves by Mormat</span>
         </Link>
 
-        <form onSubmit={handleSearch} className="hidden md:flex items-center bg-white/5 rounded-full px-4 py-1.5 border border-white/10 w-[400px] focus-within:border-indigo-500/50 transition-colors">
+        <form onSubmit={handleSearch} className="hidden md:flex items-center bg-white/5 rounded-full px-4 py-1.5 border border-white/10 w-[400px] focus-within:border-[#FF6B35]/50 transition-colors">
           <input
             type="text"
             placeholder="Search top beats"
@@ -124,7 +125,7 @@ const Navbar = () => {
                     key={cat}
                     type="button"
                     onClick={() => handleCategorySelect(cat)}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-white/5 transition-colors ${cat === category ? 'text-indigo-400' : 'text-white/60'
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-white/5 transition-colors ${cat === category ? 'text-[#FF6B35]' : 'text-white/60'
                       }`}
                   >
                     {cat}
@@ -136,178 +137,178 @@ const Navbar = () => {
         </form>
       </div>
 
+      {/* Centered Navigation for Large Screens */}
+      <nav className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-8 text-sm font-medium text-white/60">
+        <button
+          onClick={() => handleNavClick('beats')}
+          className="hover:text-white transition-colors"
+        >
+          Beats
+        </button>
+        <button
+          onClick={() => handleNavClick('sound-kits')}
+          className="hover:text-white transition-colors flex items-center gap-1"
+        >
+          Sound Kits <span className="bg-[#FF6B35]/20 text-[#FF6B35] text-[10px] px-1.5 py-0.5 rounded uppercase">New</span>
+        </button>
+      </nav>
+
       <div className="flex items-center gap-6">
-        <nav className="hidden lg:flex items-center gap-8 text-sm font-medium text-white/60">
-          <button
-            onClick={() => handleNavClick('beats')}
-            className="hover:text-white transition-colors"
-          >
-            BEATS
-          </button>
-          <button
-            onClick={() => handleNavClick('sound-kits')}
-            className="hover:text-white transition-colors flex items-center gap-1"
-          >
-            SOUND KITS <span className="bg-orange-500/20 text-orange-400 text-[10px] px-1.5 py-0.5 rounded uppercase">New</span>
-          </button>
-        </nav>
+        {isAuthenticated && (
+          <>
+            {/* Notifications */}
+            <div className="relative" ref={notificationRef}>
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 hover:bg-white/10 rounded-full transition-colors group"
+              >
+                <Bell size={20} className="text-white/60 group-hover:text-white transition-colors" />
+                <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0a0a0a]"></span>
+              </button>
 
-        <div className="flex items-center gap-6">
-          {isAuthenticated && (
-            <>
-              {/* Notifications */}
-              <div className="relative" ref={notificationRef}>
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 hover:bg-white/10 rounded-full transition-colors group"
-                >
-                  <Bell size={20} className="text-white/60 group-hover:text-white transition-colors" />
-                  <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0a0a0a]"></span>
-                </button>
-
-                {showNotifications && (
-                  <div className="absolute top-full right-0 mt-2 w-80 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
-                    <div className="p-3 border-b border-white/5 flex justify-between items-center">
-                      <span className="text-sm font-bold">Notifications</span>
-                      <button className="text-xs text-indigo-400 hover:text-indigo-300">Mark all read</button>
-                    </div>
-                    <div className="max-h-80 overflow-y-auto">
-                      <div className="p-4 hover:bg-white/5 transition-colors border-b border-white/5 cursor-pointer">
-                        <div className="flex gap-3">
-                          <div className="w-10 h-10 rounded bg-red-500/20 flex items-center justify-center shrink-0">
-                            <span className="text-red-500 font-bold">!</span>
-                          </div>
-                          <div>
-                            <p className="text-sm text-white/90 leading-tight mb-1">
-                              The beat <span className="font-bold">Fire Track</span> was deleted by the producer.
-                            </p>
-                            <p className="text-xs text-white/40">From your favorites • 2h ago</p>
-                          </div>
+              {showNotifications && (
+                <div className="absolute top-full right-0 mt-2 w-80 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                  <div className="p-3 border-b border-white/5 flex justify-between items-center">
+                    <span className="text-sm font-bold">Notifications</span>
+                    <button className="text-xs text-[#FF6B35] hover:text-[#FF6B35]/80">Mark all read</button>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    <div className="p-4 hover:bg-white/5 transition-colors border-b border-white/5 cursor-pointer">
+                      <div className="flex gap-3">
+                        <div className="w-10 h-10 rounded bg-red-500/20 flex items-center justify-center shrink-0">
+                          <span className="text-red-500 font-bold">!</span>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/90 leading-tight mb-1">
+                            The beat <span className="font-bold">Fire Track</span> was deleted by the producer.
+                          </p>
+                          <p className="text-xs text-white/40">From your favorites • 2h ago</p>
                         </div>
                       </div>
-                      <div className="p-4 hover:bg-white/5 transition-colors cursor-pointer">
-                        <div className="flex gap-3">
-                          <div className="w-10 h-10 rounded bg-green-500/20 flex items-center justify-center shrink-0">
-                            <span className="text-green-500 font-bold">$</span>
-                          </div>
-                          <div>
-                            <p className="text-sm text-white/90 leading-tight mb-1">
-                              Special Offer: Get 30% off sound kits
-                            </p>
-                            <p className="text-xs text-white/40">Limited time • 1h ago</p>
-                          </div>
+                    </div>
+                    <div className="p-4 hover:bg-white/5 transition-colors cursor-pointer">
+                      <div className="flex gap-3">
+                        <div className="w-10 h-10 rounded bg-green-500/20 flex items-center justify-center shrink-0">
+                          <span className="text-green-500 font-bold">$</span>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/90 leading-tight mb-1">
+                            Special Offer: Get 30% off sound kits
+                          </p>
+                          <p className="text-xs text-white/40">Limited time • 1h ago</p>
                         </div>
                       </div>
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
 
-              <Link href="/favorites" className="relative p-2 hover:bg-white/10 rounded-full transition-colors group" title="Favorites">
-                <Heart size={20} className="text-white/60 group-hover:text-primary transition-colors" />
-                {favorites.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center text-xs font-bold text-black border border-[#0a0a0a]">
-                    {favorites.length}
-                  </span>
-                )}
-              </Link>
+            <Link href="/favorites" className="relative p-2 hover:bg-white/10 rounded-full transition-colors group" title="Favorites">
+              <Heart size={20} className="text-white/60 group-hover:text-[#FF6B35] transition-colors" />
+              {favorites.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#FF6B35] rounded-full flex items-center justify-center text-xs font-bold text-black border border-[#0a0a0a]">
+                  {favorites.length}
+                </span>
+              )}
+            </Link>
 
-              <Link href="/cart" className="relative p-2 hover:bg-white/10 rounded-full transition-colors group" title="Cart">
-                <ShoppingCart size={20} className="text-white/60 group-hover:text-white transition-colors" />
-                {getItemCount() > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center text-xs font-bold">
-                    {getItemCount()}
-                  </span>
-                )}
-              </Link>
+            <Link href="/cart" className="relative p-2 hover:bg-white/10 rounded-full transition-colors group" title="Cart">
+              <ShoppingCart size={20} className="text-white/60 group-hover:text-white transition-colors" />
+              {getItemCount() > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#FF6B35] rounded-full flex items-center justify-center text-xs font-bold text-black border border-[#0a0a0a]">
+                  {getItemCount()}
+                </span>
+              )}
+            </Link>
 
-              {/* Dashboard Link - for all authenticated users */}
-              <Link
-                href={isSeller ? "/dashboard" : "/buyer-dashboard"}
+            {/* Dashboard Link - for all authenticated users */}
+            <Link
+              href={isSeller ? "/dashboard" : "/buyer-dashboard"}
+              className="flex items-center gap-2 p-2 px-3 hover:bg-white/10 rounded-full transition-colors group"
+            >
+              <LayoutDashboard size={18} className="text-white/60 group-hover:text-white transition-colors" />
+              <span className="text-sm font-medium text-white/60 group-hover:text-white transition-colors">
+                Dashboard
+              </span>
+            </Link>
+
+
+            {/* User Dropdown */}
+            <div className="relative" ref={profileDropdownRef}>
+              <button
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                 className="flex items-center gap-2 p-2 px-3 hover:bg-white/10 rounded-full transition-colors group"
               >
-                <LayoutDashboard size={18} className="text-white/60 group-hover:text-white transition-colors" />
-                <span className="text-sm font-medium text-white/60 group-hover:text-white transition-colors">
-                  Dashboard
+                <User size={18} className="text-white/60 group-hover:text-white transition-colors" />
+                <span className="hidden md:inline text-sm text-white/60 group-hover:text-white transition-colors">
+                  {user?.name || user?.email}
                 </span>
-              </Link>
+                <ChevronDown size={14} className={`text-white/60 transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
+              </button>
 
-
-              {/* User Dropdown */}
-              <div className="relative" ref={profileDropdownRef}>
-                <button
-                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                  className="flex items-center gap-2 p-2 px-3 hover:bg-white/10 rounded-full transition-colors group"
-                >
-                  <User size={18} className="text-white/60 group-hover:text-white transition-colors" />
-                  <span className="hidden md:inline text-sm text-white/60 group-hover:text-white transition-colors">
-                    {user?.name || user?.email}
-                  </span>
-                  <ChevronDown size={14} className={`text-white/60 transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
-                </button>
-
-                {showProfileDropdown && (
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
-                    {/* Account Type Badge */}
-                    <div className="p-3 border-b border-white/5 bg-white/5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-white/60">Account Type</span>
-                        <span className={`text-xs font-bold px-2 py-1 rounded ${isSeller ? 'bg-primary/20 text-primary' : 'bg-blue-500/20 text-blue-400'}`}>
-                          {isSeller ? '★ SELLER' : '♥ BUYER'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="p-2 border-b border-white/5">
-                      <p className="text-xs text-white/40 px-3 py-1">Account</p>
-                      <Link href="/profile" className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 rounded-md transition-colors">
-                        <User size={14} /> Profile
-                      </Link>
-                      <Link href="/settings" className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 rounded-md transition-colors">
-                        <Settings size={14} /> Settings
-                      </Link>
-                    </div>
-                    <div className="p-2 border-b border-white/5">
-                      <p className="text-xs text-white/40 px-3 py-1">Billing</p>
-                      <Link href="/plans" className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 rounded-md transition-colors">
-                        <CreditCard size={14} /> Plans & Billing
-                      </Link>
-                    </div>
-                    <div className="p-2">
-                      <button
-                        onClick={logout}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-md transition-colors text-left"
-                      >
-                        <LogOut size={14} /> Logout
-                      </button>
+              {showProfileDropdown && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                  {/* Account Type Badge */}
+                  <div className="p-3 border-b border-white/5 bg-white/5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/60">Account Type</span>
+                      <span className={`text-xs font-bold px-2 py-1 rounded ${isSeller ? 'bg-[#FF6B35]/20 text-[#FF6B35]' : 'bg-blue-500/20 text-blue-400'}`}>
+                        {isSeller ? '★ SELLER' : '♥ BUYER'}
+                      </span>
                     </div>
                   </div>
-                )}
-              </div>
-            </>
-          )}
-          {!isAuthenticated && (
-            <button
-              onClick={handleSignIn}
-              className="text-sm font-medium hover:text-white transition-colors"
-            >
-              Sign In
-            </button>
-          )}
-          {!isSeller && (
-            <button
-              onClick={handleStartSelling}
-              className="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-5 py-2 rounded-full text-sm font-medium transition-all"
-            >
-              Start Selling
-            </button>
-          )}
-        </div>
+
+                  <div className="p-2 border-b border-white/5">
+                    <p className="text-xs text-white/40 px-3 py-1">Account</p>
+                    <Link href="/profile" className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 rounded-md transition-colors">
+                      <User size={14} /> Profile
+                    </Link>
+                    <Link href="/settings" className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 rounded-md transition-colors">
+                      <Settings size={14} /> Settings
+                    </Link>
+                  </div>
+                  <div className="p-2 border-b border-white/5">
+                    <p className="text-xs text-white/40 px-3 py-1">Billing</p>
+                    <Link href="/plans" className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 rounded-md transition-colors">
+                      <CreditCard size={14} /> Plans & Billing
+                    </Link>
+                  </div>
+                  <div className="p-2">
+                    <button
+                      onClick={logout}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-md transition-colors text-left"
+                    >
+                      <LogOut size={14} /> Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+        {!isAuthenticated && (
+          <button
+            onClick={handleSignIn}
+            className="text-sm font-medium hover:text-white transition-colors"
+          >
+            Sign In
+          </button>
+        )}
+        {!isSeller && !isBuyer && (
+          <button
+            onClick={handleStartSelling}
+            className="bg-[#FF6B35] hover:bg-[#FF6B35]/90 active:scale-95 text-black px-6 py-2 rounded-full text-sm font-bold transition-all"
+          >
+            Start Selling
+          </button>
+        )}
       </div>
+
 
       <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
       <StartSellingModal open={showStartSellingModal} onOpenChange={setShowStartSellingModal} />
-    </nav>
+    </nav >
   );
 };
 

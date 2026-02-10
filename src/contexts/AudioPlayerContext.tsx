@@ -12,6 +12,8 @@ interface Beat {
   tags: string[];
   image: string;
   audioUrl?: string;
+  genre?: string;
+  mood?: string;
 }
 
 interface AudioPlayerContextType {
@@ -95,7 +97,7 @@ export const AudioPlayerProvider: React.FC<AudioPlayerProviderProps> = ({ childr
       // For demo purposes, we'll use a placeholder audio URL
       // In production, you'd use the actual beat.audioUrl
       const audioUrl = beat.audioUrl || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-      
+
       if (currentBeat?.id === beat.id && isPlaying) {
         pause();
       } else {

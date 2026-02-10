@@ -109,7 +109,7 @@ export default function ProducersPage() {
                         Find Music Producers & Audio Engineers
                     </h1>
                     <p className="text-white/60 max-w-3xl mx-auto text-lg">
-                        Explore talented music producers and audio engineers on Mormat Waves, offering their high-quality beats and versatile styles. From hip-hop to drill, trap, and more, find the perfect match for your music needs.
+                        Explore talented music producers and audio engineers on Waves by Mormat, offering their high-quality beats and versatile styles. From hip-hop to drill, trap, and more, find the perfect match for your music needs.
                     </p>
                 </div>
 

@@ -31,7 +31,7 @@ const Preloader = () => {
             <div className="relative w-24 h-24 mb-6 animate-pulse">
                 <Image
                     src="/logo.png"
-                    alt="Mormat Waves"
+                    alt="Waves by Mormat"
                     fill
                     className="object-contain"
                     priority
@@ -43,7 +43,7 @@ const Preloader = () => {
             </div>
 
             <h1 className="mt-4 text-2xl font-bold tracking-widest text-white/20 animate-pulse">
-                MORMAT WAVES
+                WAVES BY MORMAT
             </h1>
 
             <style jsx>{`

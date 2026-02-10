@@ -84,7 +84,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onOpenChange }) => {
           <DialogDescription className="text-white/60 text-center">
             {isLogin
               ? 'Welcome back! Sign in to continue.'
-              : 'Join Mormat Waves and start your music journey.'}
+              : 'Join Waves by Mormat and start your music journey.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -161,6 +161,23 @@ const AuthModal: React.FC<AuthModalProps> = ({ open, onOpenChange }) => {
               {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Sign Up for Free'}
             </button>
           </form>
+
+          {/* Demo Credentials */}
+          <div className="mt-6 bg-white/5 border border-white/10 rounded-xl p-4 text-xs text-white/60">
+            <p className="font-bold mb-2 text-white">Demo Credentials (for testing):</p>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <span className="block text-[#FF6B35] font-bold">Buyer:</span>
+                <span className="block select-all">buyer@waves.com</span>
+                <span className="block select-all">demo123</span>
+              </div>
+              <div>
+                <span className="block text-[#FF6B35] font-bold">Seller:</span>
+                <span className="block select-all">seller@waves.com</span>
+                <span className="block select-all">demo123</span>
+              </div>
+            </div>
+          </div>
 
           {/* Toggle between Sign In and Sign Up */}
           <div className="mt-6 text-center">

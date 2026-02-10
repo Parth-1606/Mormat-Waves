@@ -96,8 +96,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userData: User = {
         id: `user_${Date.now()}`,
         email,
-        name: email.split('@')[0],
+        name: email.includes('seller') ? 'Demo Seller' : (email.includes('buyer') ? 'Demo Buyer' : email.split('@')[0]),
         isOnboarded: hasOnboarded,
+        role: email === 'seller@waves.com' ? 'seller' : (email === 'buyer@waves.com' ? 'buyer' : undefined),
       };
 
       const payload = {

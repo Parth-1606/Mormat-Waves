@@ -68,7 +68,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="text-center mb-10">
-                    <h1 className="text-3xl font-bold mb-2">Welcome to Mormat Waves</h1>
+                    <h1 className="text-3xl font-bold mb-2">Welcome to Waves by Mormat</h1>
                     <p className="text-white/60">Let's set up your artist profile to get you started.</p>
                 </div>
 

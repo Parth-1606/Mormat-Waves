@@ -12,6 +12,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { useClickOutside } from '@/hooks/useClickOutside';
+import { useBeats } from '@/contexts/BeatsContext';
 
 export default function DashboardPage() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -21,8 +22,16 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const { beats, deleteBeat } = useBeats();
+  const userBeats = beats.filter(b => b.producer === user?.name);
 
   useClickOutside(profileDropdownRef as React.RefObject<HTMLElement>, () => setShowProfileDropdown(false));
+
+  const handleDeleteBeat = (id: number) => {
+    if (confirm('Are you sure you want to delete this beat?')) {
+      deleteBeat(id);
+    }
+  };
 
   // Check if user is authenticated and onboarded
   React.useEffect(() => {
@@ -166,12 +175,12 @@ export default function DashboardPage() {
             <div className="relative w-8 h-8">
               <Image
                 src="/logo.png"
-                alt="Mormat Waves"
+                alt="Waves by Mormat"
                 fill
                 className="object-contain"
               />
             </div>
-            <span className="text-xl font-bold tracking-tight">Mormat Waves</span>
+            <span className="text-xl font-bold tracking-tight">Waves by Mormat</span>
           </Link>
 
           <div className="hidden md:flex items-center bg-white/5 rounded-full px-4 py-1.5 border border-white/10 w-[400px]">
@@ -484,12 +493,46 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <div className="bg-card border border-white/10 rounded-xl p-6">
+            <div className="bg-card border border-white/10 rounded-xl p-6 col-span-1 md:col-span-2 lg:col-span-1">
               <h3 className="text-xl font-bold mb-4">UPLOADED BEATS</h3>
-              <p className="text-primary mb-4">You have not uploaded any beats yet!</p>
+              {userBeats.length > 0 ? (
+                <div className="space-y-3 mb-4 max-h-[300px] overflow-y-auto">
+                  {userBeats.slice(0, 5).map((beat) => (
+                    <div key={beat.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/5 hover:border-white/10 transition-colors group">
+                      <div className="w-10 h-10 rounded bg-white/10 overflow-hidden relative flex-shrink-0">
+                        <Image src={beat.image} alt={beat.title} fill className="object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-sm truncate">{beat.title}</p>
+                        <p className="text-xs text-white/40 truncate">{beat.genre} • {beat.bpm}</p>
+                      </div>
+                      <div className="text-right flex items-center gap-2">
+                        <p className="text-sm font-bold text-primary">₹{beat.price}</p>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteBeat(beat.id);
+                          }}
+                          className="p-1.5 rounded-md hover:bg-red-500/10 hover:text-red-500 text-white/40 transition-colors opacity-0 group-hover:opacity-100"
+                          title="Delete Beat"
+                        >
+                          <span className="w-4 h-4 block">×</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {userBeats.length > 5 && (
+                    <p className="text-center text-xs text-white/40 pt-2">
+                      + {userBeats.length - 5} more beats
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-primary mb-4">You have not uploaded any beats yet!</p>
+              )}
               <Link href="/upload">
-                <button className="bg-primary hover:bg-primary/90 text-secondary px-6 py-2 rounded-lg font-bold">
-                  Upload now!
+                <button className="w-full bg-primary hover:bg-primary/90 text-secondary px-6 py-2 rounded-lg font-bold">
+                  Upload New Beat
                 </button>
               </Link>
             </div>

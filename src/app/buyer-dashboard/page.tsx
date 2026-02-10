@@ -91,12 +91,12 @@ export default function BuyerDashboardPage() {
                         <div className="relative w-8 h-8">
                             <Image
                                 src="/logo.png"
-                                alt="Mormat Waves"
+                                alt="Waves by Mormat"
                                 fill
                                 className="object-contain"
                             />
                         </div>
-                        <span className="text-xl font-bold tracking-tight">Mormat Waves</span>
+                        <span className="text-xl font-bold tracking-tight">Waves by Mormat</span>
                     </Link>
 
                     <div className="hidden md:flex items-center bg-white/5 rounded-full px-4 py-1.5 border border-white/10 w-[400px]">

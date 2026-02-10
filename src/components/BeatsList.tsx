@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Play, ShoppingCart, MoreVertical, BadgeCheck, ChevronRight, Pause, Download, Share2, Heart } from 'lucide-react';
+import { Play, ShoppingCart, BadgeCheck, ChevronRight, Pause, Download, Share2, Heart } from 'lucide-react';
 import { useAudioPlayer } from '@/contexts/AudioPlayerContext';
-import { useClickOutside } from '@/hooks/useClickOutside';
+// Removed unused useClickOutside hook
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { usePurchases } from '@/contexts/PurchasesContext';
@@ -12,31 +12,10 @@ import { useFavorites } from '@/contexts/FavoritesContext';
 import { initiatePayment } from '@/lib/payment';
 import PaymentSuccessModal from '@/components/PaymentSuccessModal';
 import { useRouter } from 'next/navigation';
-
-const beats = [
-  { id: 1, title: 'slyrat', producer: 'ProdTrendyB', bpm: '150 BPM', key: 'D Major', price: '699', tags: ['bouncy', 'happy', 'dance'], genre: 'electronic', mood: 'happy', image: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=100' },
-  { id: 2, title: 'Neon Lights', producer: 'LxK Beats', bpm: '118 BPM', key: 'C# Major', price: '599', tags: ['Indian Pop Beat', 'Pop Type Beat', 'Electronic Pop'], genre: 'pop', mood: 'energetic', image: 'https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&q=80&w=100' },
-  { id: 3, title: 'EVEN', producer: 'Exnegytressss', bpm: '125 BPM', key: 'B Major', price: '999', tags: ['JUICE WRLD', 'LIL PEEP', 'MC INSANE'], genre: 'hip-hop', mood: 'dark', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=100' },
-  { id: 4, title: 'Lost in you', producer: 'Itz_DS77', bpm: '76 BPM', key: 'G# Minor', price: '699', tags: ['Romantic', 'hiphop', 'soft'], genre: 'r&b', mood: 'sad', image: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=100' },
-  { id: 5, title: 'GANGSTAR KARAN AUJLA', producer: 'MAXXRANGEBEATZ', bpm: '95 BPM', key: 'A Minor', price: '999', tags: ['@KARANAUJLA', '@CHEEMAY'], genre: 'hip-hop', mood: 'aggressive', image: 'https://images.unsplash.com/photo-1514525253361-bee87184919a?auto=format&fit=crop&q=80&w=100' },
-  { id: 6, title: 'Thunder Strike', producer: 'RockMaster99', bpm: '140 BPM', key: 'E Minor', price: '799', tags: ['rock', 'electric', 'powerful'], genre: 'rock', mood: 'energetic', image: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&q=80&w=100' },
-  { id: 7, title: 'Sunset Dreams', producer: 'ChillVibes', bpm: '85 BPM', key: 'F Major', price: '549', tags: ['chill', 'relaxing', 'ambient'], genre: 'electronic', mood: 'calm', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&q=80&w=100' },
-  { id: 8, title: 'Pop Sensation', producer: 'HitMaker', bpm: '128 BPM', key: 'C Major', price: '899', tags: ['catchy', 'upbeat', 'commercial'], genre: 'pop', mood: 'happy', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=100' },
-  { id: 9, title: 'Midnight Blues', producer: 'SoulBeats', bpm: '70 BPM', key: 'A Minor', price: '649', tags: ['blues', 'emotional', 'deep'], genre: 'r&b', mood: 'sad', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=100' },
-  { id: 10, title: 'Rock Anthem', producer: 'GuitarHero', bpm: '160 BPM', key: 'D Minor', price: '849', tags: ['rock', 'anthem', 'guitar'], genre: 'rock', mood: 'energetic', image: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&q=80&w=100' },
-  { id: 11, title: 'Happy Days', producer: 'SunnyBeats', bpm: '120 BPM', key: 'G Major', price: '599', tags: ['happy', 'uplifting', 'positive'], genre: 'pop', mood: 'happy', image: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=100' },
-  { id: 12, title: 'Tears Fall', producer: 'EmotionalBeats', bpm: '65 BPM', key: 'E Minor', price: '699', tags: ['sad', 'emotional', 'piano'], genre: 'r&b', mood: 'sad', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=100' },
-  { id: 13, title: 'Electric Storm', producer: 'EDMKing', bpm: '135 BPM', key: 'A Major', price: '749', tags: ['edm', 'festival', 'drop'], genre: 'electronic', mood: 'energetic', image: 'https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?auto=format&fit=crop&q=80&w=100' },
-  { id: 14, title: 'Hip Hop Vibes', producer: 'TrapLord', bpm: '90 BPM', key: 'F# Minor', price: '799', tags: ['trap', 'hip-hop', '808'], genre: 'hip-hop', mood: 'aggressive', image: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=100' },
-  { id: 15, title: 'Peaceful Mind', producer: 'ZenBeats', bpm: '75 BPM', key: 'C Major', price: '549', tags: ['calm', 'meditation', 'peaceful'], genre: 'ambient', mood: 'calm', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&q=80&w=100' },
-  { id: 16, title: 'Party Starter', producer: 'ClubMaster', bpm: '126 BPM', key: 'D Major', price: '699', tags: ['party', 'club', 'dance'], genre: 'pop', mood: 'happy', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=100' },
-  { id: 17, title: 'Broken Heart', producer: 'SadBoiBeats', bpm: '68 BPM', key: 'B Minor', price: '649', tags: ['heartbreak', 'emotional', 'melancholic'], genre: 'r&b', mood: 'sad', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=100' },
-  { id: 18, title: 'Rock Revolution', producer: 'MetalHead', bpm: '155 BPM', key: 'E Minor', price: '849', tags: ['rock', 'metal', 'heavy'], genre: 'rock', mood: 'aggressive', image: 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&q=80&w=100' },
-  { id: 19, title: 'Summer Vibes', producer: 'BeachBeats', bpm: '110 BPM', key: 'A Major', price: '599', tags: ['summer', 'tropical', 'feel-good'], genre: 'pop', mood: 'happy', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&q=80&w=100' },
-  { id: 20, title: 'Dark Nights', producer: 'ShadowBeats', bpm: '80 BPM', key: 'C# Minor', price: '749', tags: ['dark', 'mysterious', 'atmospheric'], genre: 'hip-hop', mood: 'dark', image: 'https://images.unsplash.com/photo-1514525253361-bee87184919a?auto=format&fit=crop&q=80&w=100' },
-];
+import { useBeats } from '@/contexts/BeatsContext';
 
 const BeatsList = () => {
+  const { beats } = useBeats();
   const { playBeat, currentBeat, isPlaying, setBeats } = useAudioPlayer();
   const { user, isAuthenticated } = useAuth();
   const { addToCart, isInCart, removeFromCart } = useCart();
@@ -44,7 +23,6 @@ const BeatsList = () => {
   const { searchQuery, setSearchQuery, category, setCategory } = useSearch();
   const { toggleFavorite, isFavorite } = useFavorites();
   const router = useRouter();
-  const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
   const [processingPayment, setProcessingPayment] = useState<number | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState<{
@@ -52,13 +30,11 @@ const BeatsList = () => {
     amount: number;
     orderId: string;
   } | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
 
-  useClickOutside(menuRef as React.RefObject<HTMLElement>, () => setShowMoreMenu(null));
 
   useEffect(() => {
     setBeats(beats);
-  }, [setBeats]);
+  }, [setBeats, beats]);
 
   // Filter beats based on search query and category
   const filteredBeats = beats.filter((beat) => {
@@ -113,7 +89,7 @@ const BeatsList = () => {
       return;
     }
 
-    setProcessingPayment(beat.id);
+    setProcessingPayment(Number(beat.id));
 
     try {
       const amount = parseFloat(beat.price) * 100; // Convert to paise
@@ -198,10 +174,7 @@ const BeatsList = () => {
     }
   };
 
-  const handleMoreClick = (e: React.MouseEvent, beatId: number) => {
-    e.stopPropagation();
-    setShowMoreMenu(showMoreMenu === beatId ? null : beatId);
-  };
+
 
   const handleSeeAll = () => {
     console.log('See All beats clicked');
@@ -212,7 +185,7 @@ const BeatsList = () => {
     playBeat(beat);
   };
 
-  const isCurrentBeat = (beatId: number) => currentBeat?.id === beatId;
+  const isCurrentBeat = (beatId: number | string) => currentBeat?.id === beatId;
 
   return (
     <section id="beats" className="py-12 px-4 md:px-8 max-w-7xl mx-auto">
@@ -263,9 +236,9 @@ const BeatsList = () => {
         {filteredBeats.length} {filteredBeats.length === 1 ? 'beat' : 'beats'} found
       </div>
 
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredBeats.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="col-span-full text-center py-16">
             <p className="text-white/40 text-lg mb-2">No beats found</p>
             <p className="text-white/20 text-sm">Try adjusting your search or filters</p>
           </div>
@@ -274,165 +247,141 @@ const BeatsList = () => {
             <div
               key={beat.id}
               onClick={() => handleBeatClick(beat)}
-              className={`group flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 transition-all cursor-pointer border ${isCurrentBeat(beat.id)
-                ? 'bg-primary/10 border-primary/30'
-                : 'border-transparent hover:border-white/5'
+              className={`group relative bg-[#1a1a1a] rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 ${isCurrentBeat(beat.id)
+                ? 'border-primary/50 ring-1 ring-primary/50'
+                : 'border-white/5 hover:border-primary/30'
                 }`}
             >
+              {/* Image Container */}
               <div
-                className="relative w-12 h-12 flex-shrink-0 group-hover:scale-105 transition-transform"
+                className="relative aspect-square overflow-hidden cursor-pointer"
                 onClick={(e) => handlePlayClick(e, beat)}
               >
-                <img src={beat.image} alt={beat.title} className="w-full h-full object-cover rounded-lg" />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-                  {isCurrentBeat(beat.id) && isPlaying ? (
-                    <Pause size={20} fill="currentColor" className="text-white" />
-                  ) : (
-                    <Play size={20} fill="currentColor" className="text-white ml-1" />
+                <img
+                  src={beat.image}
+                  alt={beat.title}
+                  className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isCurrentBeat(beat.id) && isPlaying ? 'scale-105' : ''
+                    }`}
+                />
+
+                {/* Overlay */}
+                <div className={`absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity duration-300 ${isCurrentBeat(beat.id) && isPlaying ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                  }`}>
+                  <div className="w-14 h-14 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center text-black shadow-lg transform transition-transform duration-300 hover:scale-110">
+                    {isCurrentBeat(beat.id) && isPlaying ? (
+                      <Pause size={24} fill="currentColor" />
+                    ) : (
+                      <Play size={24} fill="currentColor" className="ml-1" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Top Right Actions */}
+                <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(beat);
+                    }}
+                    className="p-2 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-primary hover:text-black transition-colors"
+                  >
+                    <Heart size={18} className={isFavorite(beat.id) ? 'fill-current text-primary hover:text-black' : ''} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleShare(e, beat);
+                    }}
+                    className="p-2 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-primary hover:text-black transition-colors"
+                  >
+                    <Share2 size={18} />
+                  </button>
+                </div>
+
+                {/* Badges */}
+                <div className="absolute top-3 left-3 flex gap-2">
+                  {beat.id === 1 && (
+                    <span className="px-2 py-1 rounded-md bg-yellow-500/90 backdrop-blur-sm text-black text-xs font-bold shadow-lg">
+                      Trending
+                    </span>
                   )}
                 </div>
               </div>
 
-              <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-3 items-center gap-4">
-                <div className="flex flex-col">
-                  <h3 className="font-bold text-white truncate flex items-center gap-1">
-                    {beat.title}
-                    {beat.id === 1 && <span className="text-[10px] bg-white/10 px-1 rounded">✨</span>}
-                  </h3>
-                  <div className="flex items-center gap-1 text-sm text-white/40">
-                    <span className="truncate">{beat.producer}</span>
-                    <BadgeCheck size={14} className="text-orange-400" />
+              {/* Content */}
+              <div className="p-5 space-y-4">
+                <div className="space-y-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className={`font-bold text-lg leading-tight truncate ${isCurrentBeat(beat.id) ? 'text-primary' : 'text-white'
+                      }`}>
+                      {beat.title}
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-white/60 text-sm">
+                    <span className="truncate hover:text-primary transition-colors cursor-pointer">
+                      {beat.producer}
+                    </span>
+                    <BadgeCheck size={14} className="text-primary" />
                   </div>
                 </div>
 
-                <div className="hidden md:flex items-center gap-6 text-sm text-white/40">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-4 h-[1px] bg-white/20" />
-                    <span>{beat.bpm}</span>
+                {/* Stats */}
+                <div className="flex items-center gap-4 text-xs font-medium text-white/40">
+                  <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-md border border-white/5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
+                    {beat.bpm} BPM
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-lg leading-none">♪</span>
-                    <span>{beat.key}</span>
+                  <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-md border border-white/5">
+                    <span className="text-primary">♪</span>
+                    {beat.key}
                   </div>
                 </div>
 
-                <div className="hidden lg:flex flex-wrap gap-2">
-                  {beat.tags.map((tag, tagIndex) => (
-                    <span key={`${beat.id}-tag-${tagIndex}`} className="text-[10px] px-2 py-0.5 bg-white/5 rounded-full text-white/60 border border-white/5">
-                      {tag}
+                {/* Tags */}
+                <div className="flex flex-wrap gap-1.5 h-6 overflow-hidden">
+                  {beat.tags.slice(0, 3).map((tag, tagIndex) => (
+                    <span key={tagIndex} className="text-[10px] px-2 py-0.5 bg-white/5 rounded-full text-white/50 border border-white/5">
+                      #{tag}
                     </span>
                   ))}
                 </div>
-              </div>
 
-              <div className="flex items-center gap-4 relative">
-                {canDownload(beat.id) ? (
-                  <>
+                {/* Actions */}
+                <div className="pt-2 flex items-center gap-2">
+                  {canDownload(beat.id) ? (
                     <button
                       onClick={(e) => handleDownload(e, beat)}
-                      className="bg-green-600 hover:bg-green-700 active:scale-95 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-sm transition-all whitespace-nowrap"
+                      className="flex-1 bg-green-500/10 hover:bg-green-500 hover:text-black border border-green-500/50 text-green-500 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 group/btn"
                     >
-                      <Download size={16} />
+                      <Download size={16} className="group-hover/btn:-translate-y-0.5 transition-transform" />
                       Download
                     </button>
-                    <button
-                      onClick={(e) => handleShare(e, beat)}
-                      className="bg-white/10 hover:bg-white/20 active:scale-95 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-sm transition-all whitespace-nowrap"
-                    >
-                      <Share2 size={16} />
-                      Share
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    {isInCart(beat.id) ? (
+                  ) : (
+                    <>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFromCart(beat.id);
-                        }}
-                        className="bg-red-600 hover:bg-red-700 active:scale-95 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-sm transition-all whitespace-nowrap"
+                        onClick={(e) => handleBuyClick(e, beat)}
+                        disabled={processingPayment === beat.id}
+                        className="flex-1 bg-white hover:bg-primary hover:scale-[1.02] active:scale-[0.98] text-black py-2.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-white/5"
                       >
-                        <ShoppingCart size={16} />
-                        Remove from Cart
+                        {processingPayment === beat.id ? (
+                          <span className="animate-pulse">Processing...</span>
+                        ) : (
+                          <>
+                            <span>Get for</span>
+                            <span>₹{beat.price}</span>
+                          </>
+                        )}
                       </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={(e) => handleAddToCart(e, beat)}
-                          className="bg-white/10 hover:bg-white/20 active:scale-95 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-sm transition-all whitespace-nowrap"
-                        >
-                          <ShoppingCart size={16} />
-                          Add to Cart
-                        </button>
-                        <button
-                          onClick={(e) => handleBuyClick(e, beat)}
-                          disabled={processingPayment === beat.id}
-                          className="bg-primary hover:bg-orange-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-black px-4 py-2 rounded-lg flex items-center gap-2 font-bold text-sm transition-all whitespace-nowrap"
-                        >
-                          <ShoppingCart size={16} />
-                          {processingPayment === beat.id ? 'Processing...' : `₹${beat.price}`}
-                        </button>
-                      </>
-                    )}
-                  </>
-                )}
-                <div className="relative" ref={menuRef}>
-                  <button
-                    onClick={(e) => handleMoreClick(e, beat.id)}
-                    className="text-white/40 hover:text-white transition-colors"
-                  >
-                    <MoreVertical size={20} />
-                  </button>
-                  {showMoreMenu === beat.id && (
-                    <div className="absolute right-0 top-full mt-2 bg-[#1a1a1a] border border-white/10 rounded-lg shadow-xl min-w-[150px] z-50">
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavorite(beat);
-                          setShowMoreMenu(null);
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-white/60 hover:bg-white/5 transition-colors flex items-center gap-2"
+                        onClick={(e) => handleAddToCart(e, beat)}
+                        className={`p-2.5 rounded-xl border transition-all ${isInCart(beat.id)
+                          ? 'bg-red-500/10 border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white'
+                          : 'bg-white/5 border-white/10 text-white hover:bg-white hover:text-black hover:border-white'
+                          }`}
                       >
-                        <Heart size={16} className={isFavorite(beat.id) ? 'fill-primary text-primary' : ''} />
-                        {isFavorite(beat.id) ? 'Remove from Favorites' : 'Add to Favorites'}
+                        <ShoppingCart size={20} className={isInCart(beat.id) ? "fill-current" : ""} />
                       </button>
-                      {canDownload(beat.id) ? (
-                        <>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDownload(e, beat);
-                              setShowMoreMenu(null);
-                            }}
-                            className="w-full text-left px-4 py-2 text-sm text-white/60 hover:bg-white/5 transition-colors"
-                          >
-                            Download
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleShare(e, beat);
-                              setShowMoreMenu(null);
-                            }}
-                            className="w-full text-left px-4 py-2 text-sm text-white/60 hover:bg-white/5 transition-colors"
-                          >
-                            Share
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShare(e, beat);
-                            setShowMoreMenu(null);
-                          }}
-                          className="w-full text-left px-4 py-2 text-sm text-white/60 hover:bg-white/5 transition-colors"
-                        >
-                          Share
-                        </button>
-                      )}
-                    </div>
+                    </>
                   )}
                 </div>
               </div>

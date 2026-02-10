@@ -104,7 +104,7 @@ const Footer = () => {
 
                 <div className="max-w-7xl mx-auto px-4 md:px-8 text-center relative z-10">
                     <h2 className="text-3xl font-bold mb-4">Take beats on the go!</h2>
-                    <p className="text-white/60 mb-8">Pay via multiple payment methods, all at Mormat Waves marketplace.</p>
+                    <p className="text-white/60 mb-8">Pay via multiple payment methods, all at Waves by Mormat marketplace.</p>
 
                     <div className="flex flex-wrap justify-center gap-4 mb-16">
                         {['Credit Card', 'UPI', 'Discover', 'Mastercard', 'Visa', 'Amex'].map((brand) => (
@@ -192,7 +192,7 @@ const Footer = () => {
                             <div className="relative w-8 h-8">
                                 <Image src="/logo.png" alt="Logo" fill className="object-contain" />
                             </div>
-                            <span className="text-2xl font-bold tracking-tight">Mormat</span>
+                            <span className="text-2xl font-bold tracking-tight">Waves by Mormat</span>
                         </div>
                     </div>
 

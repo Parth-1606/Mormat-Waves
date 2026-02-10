@@ -9,6 +9,7 @@ import { PurchasesProvider } from "@/contexts/PurchasesContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import { AudioPlayerProvider } from "@/contexts/AudioPlayerContext";
+import { BeatsProvider } from "@/contexts/BeatsContext";
 import AudioPlayer from "@/components/AudioPlayer";
 
 export const metadata: Metadata = {
@@ -42,19 +43,20 @@ export default function RootLayout({
           data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
         />
         <AuthProvider>
-          <CartProvider>
-            <PurchasesProvider>
-              <SearchProvider>
-                <FavoritesProvider>
-                  <AudioPlayerProvider>
-                    {children}
-                    <AudioPlayer />
-                  </AudioPlayerProvider>
-                </FavoritesProvider>
-              </SearchProvider>
-
-            </PurchasesProvider>
-          </CartProvider>
+          <BeatsProvider>
+            <CartProvider>
+              <PurchasesProvider>
+                <SearchProvider>
+                  <FavoritesProvider>
+                    <AudioPlayerProvider>
+                      {children}
+                      <AudioPlayer />
+                    </AudioPlayerProvider>
+                  </FavoritesProvider>
+                </SearchProvider>
+              </PurchasesProvider>
+            </CartProvider>
+          </BeatsProvider>
         </AuthProvider>
         <VisualEditsMessenger />
       </body>

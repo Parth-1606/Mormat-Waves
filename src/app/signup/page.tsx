@@ -221,7 +221,7 @@ export default function SignupPage() {
                 <div className="hidden md:flex flex-col justify-center px-8 md:px-12 space-y-12">
                     <div>
                         <h1 className="text-5xl lg:text-6xl font-black mb-6 leading-tight">
-                            Join <span className="text-primary">Mormat Waves</span>, It is <span className="text-primary">FREE!</span>
+                            Join <span className="text-primary">Waves by Mormat</span>, It is <span className="text-primary">FREE!</span>
                         </h1>
                         <p className="text-xl text-white/60">
                             {role === 'seller'

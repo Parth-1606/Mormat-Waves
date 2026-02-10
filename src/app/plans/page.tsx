@@ -74,7 +74,7 @@ export default function PlansPage() {
                         Choose your plan
                     </h1>
                     <p className="text-xl text-white/40">
-                        Unlock the full potential of Mormat Waves with our flexible pricing plans designed for producers of all levels.
+                        Unlock the full potential of Waves by Mormat with our flexible pricing plans designed for producers of all levels.
                     </p>
                 </div>
 

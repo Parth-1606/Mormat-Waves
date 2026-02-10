@@ -146,7 +146,7 @@ export default function LoginPage() {
                 <div className="hidden md:flex flex-col justify-center px-8 md:px-12 space-y-12">
                     <div>
                         <h1 className="text-5xl lg:text-6xl font-black mb-6 leading-tight">
-                            Welcome to <span className="text-[#FF6B35]">Mormat Waves</span>
+                            Welcome to <span className="text-[#FF6B35]">Waves by Mormat</span>
                         </h1>
                         <p className="text-xl text-white/60">
                             Your gateway to premium beats and global music connections.
